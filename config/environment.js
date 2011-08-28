@@ -7,7 +7,7 @@ var CONFIG = {
 
   production : {
     loggly_input : 'd4d530c7-b244-4f88-898b-a9fd67e7e7ea',
-    mongo_url_read : 'mongodb://localhost/production',
+    mongo_url_read : 'mongodb://db01/production'
     mongo_url_write : 'mongodb://db01/production'
   }
 };
