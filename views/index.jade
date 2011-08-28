@@ -16,13 +16,11 @@ ol.prepend-6
     | Instrument some shit in your express app
     pre
       | var noderelict = require( 'noderelict' )( '<your token here>' );
-      | app.get( "/", function( request, response, next) {
-      |    noderelict.start( request, response );
-      |    next();
-      |  }, noderelict.wrap( function( request, response ) {
-      |    response.render( "index" );
-      |  })
-      | );
+      | app.get( "/", noderelict.start, function( request, response) {
+      |   noderelict.wrap( request, function() {
+      |     response.render( "index" );
+      |   })();
+      | });
   li
     | Make a few requests
     pre

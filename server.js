@@ -77,6 +77,7 @@ app.post( '/token', function( request, response ) {
 });
 
 app.post( "/log", log, function( request, response ) {
+  console.log( "log" );
   var token = request.param( 'token', null );
   if( !token ) {
     response.writeHead( '400', { 'Content-Type': 'text/plain' } );
