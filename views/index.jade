@@ -1,1 +1,34 @@
-h1.prepend-6 Hello Node.js World
+h1.prepend-4 no.derelict
+
+h3.prepend-4 Instructions
+
+ol.prepend-6
+  li
+    | Register for a
+    a(href="http://en.gravatar.com/") gravatar
+  li
+    | Get your API token
+    pre curl --data "email=foo@example.com" http://api.noderelict.com/token"
+  li
+    | Install the noderelict package
+    pre npm install noderelict
+  li
+    | Instrument some shit
+    pre
+      | var noderelict = require( 'noderelict' )( '<your token here>' );
+      | app.get( "/", function( request, response, next) {
+      |    noderelict.start( request );
+      |    next();
+      |  }, noderelict.wrap( function( request, response ) {
+      |    response.render( "index" );
+      |  })
+      | );
+  li
+    | Make a few requests
+    pre
+      | ab -n 1000 -c 10 http://localhost:3000
+  li
+    | Checkout your
+    a(href="http://www.noderelict.com/graphs) graphs
+  li
+    | Profit!
