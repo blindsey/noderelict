@@ -56,18 +56,18 @@ app.post( '/token', function( request, response ) {
       response.writeHead( '404', { 'Content-Type': 'text/plain' } );
       response.end( "EMAIL NOT FOUND" );
     } else {
-      mongo.find( 'users', { email : email }, function( error, item ) {
-        if( item ) {
-          response.writeHead( '200', { 'Content-Type': 'text/plain' } );
-          response.end( item._id.toString() );
+      mongo.save( 'users', { email : email }, function( error ) {
+        if( error ) {
+          response.writeHead( '500', { 'Content-Type': 'text/plain' } );
+          response.end( error.message );
         } else {
-          mongo.save( 'users', { email : email }, function( error, item ) {
+          mongo.find( 'users', { email : email }, function( error, item ) {
             if( item ) {
               response.writeHead( '200', { 'Content-Type': 'text/plain' } );
               response.end( item._id.toString() );
             } else {
               response.writeHead( '500', { 'Content-Type': 'text/plain' } );
-              response.end( error || 'Internal Server Error' );
+              response.end( "INTERNAL SERVER ERROR" );
             }
           });
         }
