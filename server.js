@@ -2,7 +2,7 @@ var express = require( 'express' ),
     crypto = require( 'crypto' ),
     http = require( 'http' ),
     mongo = require( './lib/mongo' ),
-    logger = require( "./lib/logger" );
+    logger = require( './lib/logger' );
 
 var app = express.createServer();
 
@@ -31,6 +31,47 @@ app.get( '/', function( request, response ) {
   response.render( 'index' );
 });
 
+app.get( '/graphs/:token', function( request, response ) {
+  response.render( 'graphs', { token : request.param( 'token' ) } );
+});
+
+app.get( '/graphs/:token/total', function( request, response ) {
+  var data = [];
+  mongo.all( 'logs', { token : mongo.objectify( request.param( 'token' ) ) }, function( error, item ) {
+    if( error ) {
+      response.writeHead( 500, { 'Content-Type' : 'text/plain' } );
+      response.end( JSON.stringify( error ) );
+    } else if( item ) {
+      var ts = item.timestamp || new Date();
+      data.push( [ ts.getTime(), item.totalTime ] );
+    } else {
+      response.writeHead( 200, { 'Content-Type' : 'application/json' } );
+      response.end( JSON.stringify( data ) );
+    }
+  });
+});
+
+/*
+var io = require( 'socket.io' ).listen( app );
+io.set( 'log level', 2 );
+io.sockets.on( 'connection', function( socket ) {
+  console.log( 'connection' );
+  socket.on( 'poll', function( graph ) {
+    console.log( 'poll ' + JSON.stringify( graph ) );
+    var data = [];
+    mongo.all( 'logs', { token : mongo.objectify( graph.token ) }, function( error, item ) {
+      if( error ) {
+        socket.emit( 'error', JSON.stringify( error ) );
+      } else if( item ) {
+        data.push( [ item.timestamp, item.totalTime ] );
+      } else {
+        socket.emit( 'message', data );
+      }
+    });
+  });
+});
+*/
+
 app.post( '/token', function( request, response ) {
   var email = request.param( 'email', null );
   if( !email ) {
@@ -42,7 +83,6 @@ app.post( '/token', function( request, response ) {
   var hash = crypto.createHash( 'md5' );
   hash.update( email );
   var digest = hash.digest( 'hex' );
-  console.log( "Gravatar md5 " + digest );
 
   var client = http.createClient( 80, 'en.gravatar.com' );
   var client_request = client.request( 'GET', '/' + digest, {
@@ -51,7 +91,7 @@ app.post( '/token', function( request, response ) {
   });
   client_request.end();
   client_request.on( 'response', function( client_response ) {
-    console.log( "Gravatar location " + client_response.headers.location );
+    console.log( "User " + email + " => gravatar.com" + client_response.headers.location );
     if( client_response.headers.location === '/profiles/no-such-user' ) {
       response.writeHead( '404', { 'Content-Type': 'text/plain' } );
       response.end( "EMAIL NOT FOUND" );

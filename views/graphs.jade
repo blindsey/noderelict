@@ -1,0 +1,46 @@
+h3 Request time
+
+#placeholder(style="width:600px;height:400px")
+
+#error(style="display:none")
+
+script(type='text/javascript')
+  var options = {
+    bars: {
+      show: true,
+      align: "center",
+      barWidth: 1,
+      fill: true
+    },
+    label: "time (ms)",
+    legend: {show: true},
+    xaxis: {
+      mode: 'time',
+      timeformat: "%y/%m/%d %H:%M",
+      min: new Date( '2011/08/28 17:00:00' ).getTime(),
+      max: new Date().getTime()
+    },
+    yaxis: {
+      min: 0,
+      max: 1000
+    }
+  };
+
+  function fetchData() {
+    $.ajax({
+      url : '/graphs/#{token}/total',
+      type : 'GET',
+      dataType : 'json',
+      success : function( data, textStatus, jqXHR ) {
+        console.log( JSON.stringify( data ) );
+        $.plot( $( '#placeholder' ), data, options );
+        setTimeout( fetchData, 10000 );
+      },
+      error : function( jqXHR, textStatus, errorThrown ) {
+        $( '#error' ).html( textStatus ).show();
+      }
+    });
+  }
+
+  fetchData();
+

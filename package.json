@@ -1,12 +1,11 @@
 {
   "name": "noderelict",
   "version": "0.0.1",
-  "dependencies":
-  {
-    "express" : "2",
-    "mongodb" : "0",
-    "jade" :  "0",
-    "less" : "1",
-    "loggly" : "0"
+  "dependencies": {
+    "express": "2",
+    "mongodb": "0",
+    "jade": "0",
+    "less": "1",
+    "loggly": "0"
   }
 }
