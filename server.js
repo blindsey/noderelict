@@ -16,6 +16,10 @@ app.configure( function() {
   app.use( express.compiler( { src : __dirname + '/public', enable : [ 'less' ] } ) );
 });
 
+app.get( '/', function( request, response ) {
+  response.render( 'index' );
+});
+
 app.post( '/token', function( request, response ) {
   var email = request.param( 'email', null );
   if( !email ) {
@@ -61,8 +65,31 @@ app.post( '/token', function( request, response ) {
   });
 });
 
-app.get( '/', function( request, response ) {
-  response.render( 'index' );
+app.post( "/log", function( request, response ) {
+  var token = request.param( 'token', null );
+  if( !token ) {
+    response.writeHead( '400', { 'Content-Type': 'text/plain' } );
+    response.end( "NO TOKEN" );
+    return;
+  }
+
+  token = mongo.objectify( token );
+  mongo.find( 'users', { _id : token }, function( error, item ) {
+    if( !item ) {
+      response.writeHead( '404', { 'Content-Type': 'text/plain' } );
+      response.end( "INVALID TOKEN" );
+    } else {
+      var payload = request.param( 'payload', '{}' );
+      console.log( payload );
+      payload = JSON.parse( payload );
+      payload.timestamp = new Date();
+      payload.token = token;
+      mongo.save( 'logs', payload, function( error, item ) {
+        response.writeHead( '200', { 'Content-Type': 'text/plain' } );
+        response.end( "OK" );
+      });
+    }
+  });
 });
 
 var port = process.env.PORT || 3000;
