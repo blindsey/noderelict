@@ -13,11 +13,11 @@ ol.prepend-6
     | Install the noderelict package
     pre npm install noderelict
   li
-    | Instrument some shit
+    | Instrument some shit in your express app
     pre
       | var noderelict = require( 'noderelict' )( '<your token here>' );
       | app.get( "/", function( request, response, next) {
-      |    noderelict.start( request );
+      |    noderelict.start( request, response );
       |    next();
       |  }, noderelict.wrap( function( request, response ) {
       |    response.render( "index" );
