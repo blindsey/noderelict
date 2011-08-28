@@ -1,7 +1,8 @@
 var express = require( 'express' ),
     crypto = require( 'crypto' ),
     http = require( 'http' ),
-    mongo = require( './lib/mongo' );
+    mongo = require( './lib/mongo' ),
+    logger = require( "./lib/logger" );
 
 var app = express.createServer();
 
@@ -14,6 +15,16 @@ app.configure( function() {
   app.set( "views", __dirname + "/views/" );
   app.set( "view engine", "jade" );
   app.use( express.compiler( { src : __dirname + '/public', enable : [ 'less' ] } ) );
+});
+
+function log( request, response, next ) {
+  logger.log_request( request );
+  next();
+}
+
+process.on( "uncaughtException", function( error ) {
+  console.error( "Uncaught exception: " + error.message );
+  console.trace();
 });
 
 app.get( '/', function( request, response ) {
@@ -65,7 +76,7 @@ app.post( '/token', function( request, response ) {
   });
 });
 
-app.post( "/log", function( request, response ) {
+app.post( "/log", log, function( request, response ) {
   var token = request.param( 'token', null );
   if( !token ) {
     response.writeHead( '400', { 'Content-Type': 'text/plain' } );
