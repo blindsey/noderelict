@@ -67,7 +67,7 @@ app.post( '/token', function( request, response ) {
               response.end( item._id.toString() );
             } else {
               response.writeHead( '500', { 'Content-Type': 'text/plain' } );
-              response.end( "INTERNAL SERVER ERROR" );
+              response.end( error || 'INTERNAL SERVER ERROR' );
             }
           });
         }
